@@ -1,4 +1,4 @@
-import Task
+from Task import Task
 
 class TaskManager:
     tasks = []
@@ -6,13 +6,13 @@ class TaskManager:
     def create(self):
         pass
     
-    def view(self, task):
+    def view(self, name):
         pass
     
-    def delete(self, task):
+    def delete(self, name):
         pass
     
-    def edit(self, task):
+    def edit(self, name):
         pass
     
 manager = TaskManager()

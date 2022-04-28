@@ -1,44 +1,6 @@
-from dataclasses import dataclass
+from Date import Date
 import operator
 
-class Date:
-    year = {
-        '01': {'name': 'January', 'days': 31},
-        '02': {'name': 'February', 'days': 28},
-        '03': {'name': 'March', 'days': 31},
-        '04': {'name': 'April', 'days': 30},
-        '05': {'name': 'May', 'days': 31},
-        '06': {'name': 'June', 'days': 30},
-        '07': {'name': 'July', 'days': 31},
-        '08': {'name': 'August', 'days': 31},
-        '09': {'name': 'September', 'days': 30},
-        '10': {'name': 'October', 'days': 31},
-        '11': {'name': 'November', 'days': 30},
-        '12': {'name': 'December', 'days': 31},
-    }
-    
-    def __init__(self, date):
-        self.date = date
-        
-    date = property(operator.attrgetter('date'))
-    @date.setter
-    def date(self, d):
-        if not len(d) == 8: raise TypeError("dates must be 8 digits long")
-        year = d[:4], month = d[4:6], day = d[6:8]
-        if not d.isdigit(): raise TypeError("dates must only contain integers")
-        if not 1 <= month <= 12: raise TypeError("month value must range between 01 and 12")
-        if not day <= self.year[month]["days"]: raise TypeError(f'month {month} can have at most {self.year[month]["days"]} days')
-        self.date = d
-        
-    def pretty(self):
-        year = self.date[:4]
-        month = self.date[4:6]
-        day = self.date[6:8]
-            
-        return f'{self.year[month]["name"]} {day}, {year}'
-            
-today = Date('20220427')
-print(today.pretty())
 
 class Task:    
     def __init__(self, name, start_time, duration):
