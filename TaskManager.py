@@ -1,4 +1,4 @@
-from Task import Task
+import Task
 
 class TaskManager:
     tasks = []
