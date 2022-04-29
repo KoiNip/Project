@@ -2,8 +2,8 @@ import sys
 from ScheduleManager import manager
 import Task
 
-def something():
-    print('function something() has ran')
+def doSomeFunction():
+    print('function doSomeFunction() has ran')
     
 class TextGuidedMenuSystem:
     def __init__(self, directory, decorator, indent, welcome_msg, main_msg):
@@ -60,23 +60,23 @@ class TextGuidedMenuSystem:
 def main():
     directory = {
         "Tasks": {
-            "Create": something,
-            "View": something,
-            "Delete": something,
-            "Edit": something
+            "Create": doSomeFunction,
+            "View": doSomeFunction,
+            "Delete": doSomeFunction,
+            "Edit": doSomeFunction
         },
         "Schedule": {
-            "Read from file": something,
+            "Read from file": doSomeFunction,
             "Write to file": {
-                "one day": something,
-                "one week": something,
-                "one month": something,
-                "entire schedule": something
+                "one day": doSomeFunction,
+                "one week": doSomeFunction,
+                "one month": doSomeFunction,
+                "entire schedule": doSomeFunction
             },
             "View": {
-                "one day": something,
-                "one week": something,
-                "one month": something
+                "one day": doSomeFunction,
+                "one week": doSomeFunction,
+                "one month": doSomeFunction
             }
         }
     }
