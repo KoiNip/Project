@@ -1,12 +1,12 @@
 from Date import Date
+import json
 
 class Task:
     task_types = []
-    json = {}
 
     def __init__(self, name, category, start_time, duration):
         self.name = name
-        self.category = category
+        self.type = category
         self.start_time = round(start_time*4)/4
         self.duration = round(duration*4)/4
 
@@ -15,7 +15,7 @@ class Task:
             raise AssertionError('start_time must be a positive number from 0 (midnight) to 23.75 (11:45 pm)')
         if not (0.25 <= self.duration <= 23.75): 
             raise AssertionError('duration must be a positive number from 0.25 to 23.75')
-        if self.category not in self.task_types: 
+        if self.type not in self.task_types: 
             raise AssertionError(f'{self.__class__.__name__} Tasks must have a category attribute of one of the following: {self.task_types}')
 
     # Make sure that the 'Task' superclass cannot be instantiated.
@@ -24,7 +24,16 @@ class Task:
             raise TypeError(f"only children of '{cls.__name__}' may be instantiated")
         return super().__new__(cls)
     
+    def view(self):
+        title = f'{self.name} [{self.__class__.__name__}]'
+        print(f'{title}\n{"-"*len(title)}')
+        print()
+    
+    def to_json(self):
+        return (json.dumps(self.__dict__, default=Date.as_int, indent="\t"))
+    
 class Recurring(Task):
+    '''Reucrring tasks occur daily or weekly.'''
     task_types = [
         'Class',
         'Study',
@@ -42,23 +51,13 @@ class Recurring(Task):
 
         # Parameter validation
         if self.frequency not in [1, 7]: raise AssertionError('frequency must be either 1 (daily) or 7 (weekly)')
-
-    def to_json(self):
-        self.json.update(
-            {
-                "Name" : self.name,
-                "Type" : self.category,
-                "StartDate" : self.start_date._date,
-                "StartTime" : self.start_time,
-                "Duration": self.duration,
-                "EndDate" : self.end_date,
-                "Frequency" : self.frequency
-            }
-        )
-        return self.json
-
+        
+    def view(self):
+        super().view()
+        print('something else here')
         
 class Transient(Task):
+    '''Transient tasks only occur once.'''
     task_types = [
         'Visit',
         'Shopping',
@@ -68,8 +67,18 @@ class Transient(Task):
     def __init__(self, name, category, start_time, duration, date):
         super().__init__(name, category, start_time, duration)
         self.date = Date(date)
+        
+    def view(self):
+        super().view()
+        print('something else here')
 
 class Anti(Task):
+    '''Anti-tasks are used to cancel out one repetition of a recurring task.
+
+    Consequently, there must be a recurring task that is scheduled for the given
+    date, and that recurring task must have a start time that matches the start
+    time of this anti-task. Similarly, the durations of the task and anti-task must be
+    the same.'''
     task_types = [
         'Cancellation'
     ]
@@ -77,3 +86,7 @@ class Anti(Task):
     def __init__(self, name, category, start_time, duration, date):
         super().__init__(name, category, start_time, duration)
         self.date = Date(date)
+        
+    def view(self):
+        super().view()
+        print('something else here')

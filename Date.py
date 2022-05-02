@@ -1,4 +1,6 @@
-class Date:
+from json import JSONEncoder
+
+class Date():
     _calendar = {
     	'01': {'month': 'January', 'days': 31},
         '02': {'month': 'February', 'days': 28},
@@ -32,7 +34,8 @@ class Date:
         return self._date
     
     def __repr__(self):
-        return f'{self.__class__.__name__}({self._date})'
+        return self._date
+        # return f'{self.__class__.__name__}({self._date})'
     
     def pretty(self):
         """Return a pretty version of the date as a string.
@@ -59,6 +62,9 @@ class Date:
         True
         """
         return self._date > other._date
+    
+    def as_int(self):
+        return int(self._date)
     
 if __name__ == '__main__':
     today = Date('20220427')
