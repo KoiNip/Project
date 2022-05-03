@@ -1,5 +1,3 @@
-from json import JSONEncoder
-
 class Date():
     _calendar = {
     	'01': {'month': 'January', 'days': 31},
@@ -45,24 +43,16 @@ class Date():
         return f'{self._calendar[self._month]["month"]} {self._day}, {self._year}'
         
     # Comparisons
-    def __eq__(self, other): return self._date == other._date
+    def __eq__(self, other): 
+        return self._date == other._date
     
-    def __lt__(self, other): return self._date < other._date
-    def before(self, other):
-        """Return True if self occurs before other, False otherwise.
-        >>> Date('20220427').before(Date('20220516'))
-        True
-        """
+    def __lt__(self, other): 
         return self._date < other._date
     
-    def __gt__(self, other): return self._date > other._date
-    def after(self, other): 
-        """Return True if self occurs after other, False otherwise.
-        >>> Date('20220427').after(Date('20220425'))
-        True
-        """
-        return self._date > other._date
+    def __gt__(self, other):
+         return self._date > other._date
     
+    # Helper functino for json serialization
     def as_int(self):
         return int(self._date)
     

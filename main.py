@@ -1,5 +1,5 @@
 import sys
-from ScheduleManager import manager
+from Schedule import schedule
 import Task
 
 def doSomeFunction():

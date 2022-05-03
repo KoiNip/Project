@@ -23,14 +23,22 @@ class Task:
         if cls is Task:
             raise TypeError(f"only children of '{cls.__name__}' may be instantiated")
         return super().__new__(cls)
+
+    def overlaps(self, other):
+        '''Returns True if self overlaps other, otherwise False.'''
+        pass
     
+    def to_json(self):
+        '''Returns a JSON string representation of the task.
+        Useful for writing schedules to a file.
+        '''
+        return (json.dumps(self.__dict__, default=Date.as_int, indent="\t"))
+
     def view(self):
+        '''Prints a user-friendly representation of the task.'''
         title = f'{self.name} [{self.__class__.__name__}]'
         print(f'{title}\n{"-"*len(title)}')
         print()
-    
-    def to_json(self):
-        return (json.dumps(self.__dict__, default=Date.as_int, indent="\t"))
     
 class Recurring(Task):
     '''Reucrring tasks occur daily or weekly.'''

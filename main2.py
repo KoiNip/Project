@@ -1,4 +1,4 @@
-from ScheduleManager import manager
+from Schedule import schedule
 import Task
 import consolemenu as cm
 import consolemenu.items as cmi
@@ -49,7 +49,7 @@ if __name__ == '__main__':
         }
     }
     
-    manager.add(first_task)
+    schedule.add(first_task)
     
     menu=cm.ConsoleMenu("PSS", "CS 3560", clear_screen=False)
     buildMenu(menu, directory)
