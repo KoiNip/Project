@@ -3,14 +3,14 @@ class Date:
     	'01': {'month': 'January', 'days': 31},
         '02': {'month': 'February', 'days': 28},
         '03': {'month': 'March', 'days': 31},
-        '04': {'month': 'April', 'days': 31},
+        '04': {'month': 'April', 'days': 30},
         '05': {'month': 'May', 'days': 31},
-        '06': {'month': 'June', 'days': 31},
+        '06': {'month': 'June', 'days': 30},
         '07': {'month': 'July', 'days': 31},
         '08': {'month': 'August', 'days': 31},
-        '09': {'month': 'September', 'days': 31},
+        '09': {'month': 'September', 'days': 30},
         '10': {'month': 'October', 'days': 31},
-        '11': {'month': 'November', 'days': 31},
+        '11': {'month': 'November', 'days': 30},
         '12': {'month': 'December', 'days': 31},
     }
     
