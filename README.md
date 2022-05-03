@@ -2,7 +2,7 @@
 A scheduling program built using Python.
 
 ## How to use
-run `main2.py`
+run `main.py`
 
 ## Useful Terminal Commands
 `py -3 -m venv .venv` to create a virtual environment in the current directory
