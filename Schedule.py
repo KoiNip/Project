@@ -1,11 +1,19 @@
 import Task
 import os
-
+from utility.progress_bar import progressBar
 
 class Schedule:
     _tasks = []
         
     def add_task(self):
+        '''
+        I added a sort of 'easter egg'
+        in the view() function. Because of this,
+        DO NOT ALLOW a task with the name 'ALL'
+        to be accepted, and 
+        DO NOT ALLOW a task name that is just numbers
+        to be accepted. Thanks -Seth
+        '''
         task_types = {
             'Class': 'Recurring',
             'Study': 'Recurring',
@@ -29,10 +37,33 @@ class Schedule:
         input("Input the ")
     
     def view(self):
-        pass
+        name = input("Task name? >> ")
+        
+        # EASTER EGG
+        if name == 'ALL':
+            for index, task in enumerate(self._tasks):
+                print(f'[{index}] [{task.__class__.__name__[0]}] {task.name}')
+            return
+        
+        for index, item in enumerate(progressBar(self._tasks, prefix=f'Searching')):
+            if (item.name == name) or (str(index) == name): 
+                print(f'Searching\nSearch stopped: task \'{name}\' found\n')
+                self._tasks[index].view()
+                return
+            
+        print(f'Sorry, no task with the name \'{name}\' currently exists.')
     
     def delete(self):
-        pass
+        name = input("Task name? >> ")
+        
+        for index, item in enumerate(progressBar(self._tasks, prefix=f'Searching')):
+            if item.name == name:
+                print(f'Searching\nSearch stopped: task \'{name}\' found\n')
+                self._tasks.pop(index)
+                print(f'Deleted task \'{name}\'')
+                return
+            
+        print(f'Sorry, no task with the name \'{name}\' currently exists.')
 
     def edit(self):
         task_name = input("Input a new task name:")

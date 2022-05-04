@@ -1,6 +1,7 @@
 from Schedule import schedule
 import consolemenu as cm
 import consolemenu.items as cmi
+import Task
 
 def buildMenu(menu, directory):
     for k, v in directory.items():
@@ -39,4 +40,35 @@ if __name__ == '__main__':
 
     gui=cm.ConsoleMenu("PSS", "CS 3560", clear_screen=False)
     buildMenu(gui, directory)
+    
+    test_recurring = Task.Recurring(
+        name='catching some zzz',
+        category='Sleep',
+        start_time=22.5,
+        duration=8,
+        start_date=20220503,
+        end_date=20221231,
+        frequency=1
+    )
+    
+    test_transient = Task.Transient(
+        name = 'Go gym',
+        category = 'Visit',
+        start_time = 9.5,
+        duration=2,
+        date=20220509
+    )
+    
+    test_anti = Task.Anti(
+        name='I really didn\'t want to walk',
+        category='Cancellation',
+        date=20200415,
+        start_time=10.25,
+        duration=0.75
+    )
+    
+    schedule._tasks.append(test_recurring)
+    schedule._tasks.append(test_transient)
+    schedule._tasks.append(test_anti)
+    
     gui.show()
