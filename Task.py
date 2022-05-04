@@ -3,7 +3,18 @@ import json
 import math
 
 class Task:
-    task_types = []
+    task_types = [
+        'Class',
+        'Study',
+        'Sleep',
+        'Exercise',
+        'Work',
+        'Meal',
+        'Visit',
+        'Shopping',
+        'Appointment',
+        'Cancellation'
+    ]
 
     def __init__(self, name, category, start_time, duration):
         self.name = name
