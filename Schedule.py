@@ -4,7 +4,9 @@ import os
 
 class Schedule:
     _tasks = []
-    _task_type_names = {
+        
+    def add_task(self):
+        task_types = {
             'Class': 'Recurring',
             'Study': 'Recurring',
             'Sleep': 'Recurring',
@@ -17,35 +19,27 @@ class Schedule:
             'Cancellation': 'Anti'
         }
         
-    
-    def add_task(self):
-        names = [task.name for task in self._tasks]
-        
         task_name = input("Input a new task name:")
-        while task_name in names:
+        while task_name in [task.name for task in self._tasks]:
             input("That task name has already been used, please input another task name: ")
         task_type = input("Input the task type: ")
-        while task_type not in self._task_type_names.keys():
+        while task_type not in task_types.keys():
             input("That is not a vaild task type. Please input a valid task type: ")
         task_type = self._task_type_names[task_type]
         input("Input the ")
-        
-
+    
+    def view(self):
         pass
-        
-
     
     def delete(self):
         pass
 
     def edit(self):
-        names = [task.name for task in self._tasks]
         task_name = input("Input a new task name:")
-        while task_name not in names:
+        while task_name not in [task.name for task in self._tasks]:
             input("That task name is not in the schedule, please input a task in the schedule: ")
         else: 
-
-        pass
+            pass
 
     def read(self):
         file_name = input("Input the name of the file: ")
@@ -57,15 +51,13 @@ class Schedule:
                 f = open("{file_name}", "awt")
             else:
                 print("The file {file_name} is not a valid file")
-            
-        pass
 
     def write(self):
         file_name = input("Input the name of the file: ")
         while file_name not in self._tasks:
             input("File does not exist, enter a valid file name: ")
         else: 
-        pass
+            pass
 
     def write_day(self):
         pass
