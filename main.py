@@ -1,10 +1,7 @@
 from Schedule import schedule
-import Task
 import consolemenu as cm
 import consolemenu.items as cmi
-
-def doSomeFunction():
-    print('doSomeFunction() executed...')
+import Task
 
 def buildMenu(menu, directory):
     for k, v in directory.items():
@@ -17,40 +14,61 @@ def buildMenu(menu, directory):
             menu.append_item(cmi.FunctionItem(k, v))
         else: raise AssertionError(f'This should never be executed.\nThe value associated with {k} was neither a dictionary or function')
 
-if __name__ == '__main__':
-    first_task = Task.Transient(
-        name='grocery shopping', 
-        category='Shopping', 
-        start_time=10.5, 
-        duration=2, 
-        date=20220514
-    )
-    
+if __name__ == '__main__':    
     directory = {
         "Tasks": {
             "Create": schedule.add_task,
-            "View": first_task.view,
-            "Delete": doSomeFunction,
-            "Edit": doSomeFunction
+            "View": schedule.view,
+            "Delete": schedule.delete,
+            "Edit": schedule.edit
         },
         "Schedule": {
-            "Read from file": doSomeFunction,
+            "Read from file": schedule.read,
             "Write to file": {
-                "one day": doSomeFunction,
-                "one week": doSomeFunction,
-                "one month": doSomeFunction,
-                "entire schedule": doSomeFunction
+                "one day": schedule.write_day,
+                "one week": schedule.write_week,
+                "one month": schedule.write_month,
+                "entire schedule": schedule.write
             },
             "View": {
-                "one day": doSomeFunction,
-                "one week": doSomeFunction,
-                "one month": doSomeFunction
+                "one day": schedule.view_day,
+                "one week": schedule.view_week,
+                "one month": schedule.view_month
             }
         }
     }
+
+    gui=cm.ConsoleMenu("PSS", "CS 3560", clear_screen=False)
+    buildMenu(gui, directory)
     
-    # schedule.add(first_task)
+    test_recurring = Task.Recurring(
+        name='catching some zzz',
+        category='Sleep',
+        start_time=22.5,
+        duration=8,
+        start_date=20220503,
+        end_date=20221231,
+        frequency=1
+    )
     
-    menu=cm.ConsoleMenu("PSS", "CS 3560", clear_screen=False)
-    buildMenu(menu, directory)
-    menu.show()
+    test_transient = Task.Transient(
+        name = 'Go gym',
+        category = 'Visit',
+        start_time = 9.5,
+        duration=2,
+        date=20220509
+    )
+    
+    test_anti = Task.Anti(
+        name='I really didn\'t want to walk',
+        category='Cancellation',
+        date=20200415,
+        start_time=10.25,
+        duration=0.75
+    )
+    
+    schedule._tasks.append(test_recurring)
+    schedule._tasks.append(test_transient)
+    schedule._tasks.append(test_anti)
+    
+    gui.show()

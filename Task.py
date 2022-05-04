@@ -48,6 +48,16 @@ class Task:
 
     def view(self):
         '''Prints a user-friendly representation of the task.'''
+        def pretty_time(time):
+            mapping = {.0: '00', .25: '15', .5: '30', .75: '45'}
+            minutes, hour = math.modf(time)
+
+            period = 'AM' if hour <= 11 else 'PM'
+            hour = 12 if (hour == 0 or hour == 12) else int(hour) % 12
+            minutes = mapping[minutes]
+
+            return f'{hour}:{minutes} {period}'
+        
         duration_map = {
             .25: '15',
             .5: '30',
@@ -62,18 +72,8 @@ class Task:
         else:
             better_duration = f'{duration_map[self.duration]} minutes'
         
-        sub_title = f'Starts at {self.pretty_time(self.start_time)} and lasts for {better_duration}'
+        sub_title = f'Starts at {pretty_time(self.start_time)} and lasts for {better_duration}'
         print(sub_title)
-        
-    def pretty_time(self, time):
-        mapping = {.0: '00', .25: '15', .5: '30', .75: '45'}
-        minutes, hour = math.modf(time)
-    
-        period = 'AM' if hour <= 11 else 'PM'
-        hour = 12 if (hour == 0 or hour == 12) else int(hour) % 12
-        minutes = mapping[minutes]
-
-        return f'{hour}:{minutes} {period}'
     
 class Recurring(Task):
     '''Reucrring tasks occur daily or weekly.'''

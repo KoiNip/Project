@@ -2,11 +2,21 @@ from pickle import FALSE, TRUE
 import Task
 from Date import Date
 import os
-
+from utility.progress_bar import progressBar
 
 class Schedule:
     _tasks = []
-    _task_type_names = {
+        
+    def add_task(self):
+        '''
+        I added a sort of 'easter egg'
+        in the view() function. Because of this,
+        DO NOT ALLOW a task with the name 'ALL'
+        to be accepted, and 
+        DO NOT ALLOW a task name that is just numbers
+        to be accepted. Thanks -Seth
+        '''
+        task_types = {
             'Class': 'Recurring',
             'Study': 'Recurring',
             'Sleep': 'Recurring',
@@ -18,10 +28,6 @@ class Schedule:
             'Appointment': 'Transient',
             'Cancellation': 'Anti'
         }
-        
-    
-    def add_task(self):
-        names = [task.name for task in self._tasks]
         
         task_name = input("Input a new task name:")
         while task_name in names:
@@ -75,19 +81,42 @@ class Schedule:
             self._tasks.append(transient_name)
             print(self._tasks)
             return
-
+    
+    def view(self):
+        name = input("Task name? >> ")
         
-
+        # EASTER EGG
+        if name == 'ALL':
+            for index, task in enumerate(self._tasks):
+                print(f'[{index}] [{task.__class__.__name__[0]}] {task.name}')
+            return
+        
+        for index, item in enumerate(progressBar(self._tasks, prefix=f'Searching')):
+            if (item.name == name) or (str(index) == name): 
+                print(f'Searching\nSearch stopped: task \'{name}\' found\n')
+                self._tasks[index].view()
+                return
+            
+        print(f'Sorry, no task with the name \'{name}\' currently exists.')
     
     def delete(self):
-        pass
+        name = input("Task name? >> ")
+        
+        for index, item in enumerate(progressBar(self._tasks, prefix=f'Searching')):
+            if item.name == name:
+                print(f'Searching\nSearch stopped: task \'{name}\' found\n')
+                self._tasks.pop(index)
+                print(f'Deleted task \'{name}\'')
+                return
+            
+        print(f'Sorry, no task with the name \'{name}\' currently exists.')
 
     def edit(self):
-        names = [task.name for task in self._tasks]
         task_name = input("Input a new task name:")
-        while task_name not in names:
+        while task_name not in [task.name for task in self._tasks]:
             input("That task name is not in the schedule, please input a task in the schedule: ")
-        pass
+        else: 
+            pass
 
     def read(self):
         file_name = input("Input the name of the file: ")
@@ -99,14 +128,13 @@ class Schedule:
                 f = open("{file_name}", "awt")
             else:
                 print("The file {file_name} is not a valid file")
-            
-        pass
 
     def write(self):
         file_name = input("Input the name of the file: ")
         while file_name not in self._tasks:
             input("File does not exist, enter a valid file name: ")
-        pass
+        else: 
+            pass
 
     def write_day(self):
         pass
