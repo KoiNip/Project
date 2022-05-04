@@ -16,6 +16,7 @@ class Schedule:
         DO NOT ALLOW a task name that is just numbers
         to be accepted. Thanks -Seth
         '''
+        
         task_types = {
             'Class': 'Recurring',
             'Study': 'Recurring',
@@ -29,13 +30,19 @@ class Schedule:
             'Cancellation': 'Anti'
         }
         
+        names = [task.name for task in self._tasks]
         task_name = input("Input a new task name:")
-        while task_name in names:
-            task_name = input(f"The task name {task_name} has already been used, please input another task name: ")
+        while task_name in names or task_name == "ALL" or task_name.isnumeric() == True:
+            if task_name in names:
+                task_name = input(f"The task name {task_name} has already been used, please input another task name: ")
+            if task_name == "ALL":
+                task_name = input(f"The task name {task_name} can't be used, please input another task name: ")
+            if task_name.isnumeric() == True:
+                task_name = input(f"The task name can't be all numbers, please input another task name: ")
         task_type = input("Input the task type: ")
-        while task_type not in self._task_type_names.keys():
+        while task_type not in task_types.keys():
             task_type = input(f"{task_type} is not a vaild task type. Please input a valid task type: ")
-        task_category = self._task_type_names[task_type]
+        task_category = task_types[task_type]
         task_date = int(input("Input the (start) date of the task"))
         valid_date = FALSE
         while (valid_date == FALSE):
@@ -67,19 +74,19 @@ class Schedule:
             #add overlap here when function finished
             recurring_name = Task.Recurring(task_name, task_type, task_time, task_duration, task_date, end_date, frequency)
             self._tasks.append(recurring_name)
-            print(self._tasks)
+            print(f"{task_name} has been added!")
             return
         elif task_category == "Anti":
             #add overlap here when function finished
             anti_name = Task.Anti(task_name, task_type, task_time, task_duration, task_date)
             self._tasks.append(anti_name)
-            print(self._tasks)
+            print(f"{task_name} has been added!")
             return
         else:
             #add overlap here when function is finished
             transient_name = Task.Transient(task_name, task_type, task_time, task_duration, task_date)
             self._tasks.append(transient_name)
-            print(self._tasks)
+            print(f"{task_name} has been added!")
             return
     
     def view(self):
@@ -120,14 +127,10 @@ class Schedule:
 
     def read(self):
         file_name = input("Input the name of the file: ")
-        while file_name not in self._tasks: #i dont think this will work
-            input("File does not exist, enter a valid file name: ")
+        if os.path.exist("{file_name}"):
+            f = open("{file_name}", "awt")
         else:
-            
-            if os.path.exist("{file_name}"):
-                f = open("{file_name}", "awt")
-            else:
-                print("The file {file_name} is not a valid file")
+            print("The file {file_name} is not a valid file")
 
     def write(self):
         file_name = input("Input the name of the file: ")
