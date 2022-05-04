@@ -28,7 +28,7 @@ if __name__ == '__main__':
     
     directory = {
         "Tasks": {
-            "Create": doSomeFunction,
+            "Create": schedule.add_task,
             "View": first_task.view,
             "Delete": doSomeFunction,
             "Edit": doSomeFunction
