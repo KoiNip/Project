@@ -49,7 +49,7 @@ if __name__ == '__main__':
         }
     }
     
-    schedule.add(first_task)
+    # schedule.add(first_task)
     
     menu=cm.ConsoleMenu("PSS", "CS 3560", clear_screen=False)
     buildMenu(menu, directory)

@@ -1,5 +1,6 @@
 from Date import Date
 import json
+import math
 
 class Task:
     task_types = []
@@ -36,9 +37,32 @@ class Task:
 
     def view(self):
         '''Prints a user-friendly representation of the task.'''
-        title = f'{self.name} [{self.__class__.__name__}]'
+        duration_map = {
+            .25: '15',
+            .5: '30',
+            .75: '45'
+        }
+        
+        title = f'{self.name} [{self.__class__.__name__}] [{self.type}]'
         print(f'{title}\n{"-"*len(title)}')
-        print()
+        
+        if (self.duration not in duration_map):
+            better_duration = f'{self.duration} hours'
+        else:
+            better_duration = f'{duration_map[self.duration]} minutes'
+        
+        sub_title = f'Starts at {self.pretty_time(self.start_time)} and lasts for {better_duration}'
+        print(sub_title)
+        
+    def pretty_time(self, time):
+        mapping = {.0: '00', .25: '15', .5: '30', .75: '45'}
+        minutes, hour = math.modf(time)
+    
+        period = 'AM' if hour <= 11 else 'PM'
+        hour = 12 if (hour == 0 or hour == 12) else int(hour) % 12
+        minutes = mapping[minutes]
+
+        return f'{hour}:{minutes} {period}'
     
 class Recurring(Task):
     '''Reucrring tasks occur daily or weekly.'''
@@ -59,10 +83,11 @@ class Recurring(Task):
 
         # Parameter validation
         if self.frequency not in [1, 7]: raise AssertionError('frequency must be either 1 (daily) or 7 (weekly)')
-        
+
     def view(self):
         super().view()
-        print('something else here')
+        true_freq = 'Daily' if self.frequency == 1 else 'Weekly'
+        print(f'Starts on {self.start_date.pretty()} and ends on {self.end_date.pretty()}\nFrequency: {true_freq}')
         
 class Transient(Task):
     '''Transient tasks only occur once.'''
@@ -78,7 +103,7 @@ class Transient(Task):
         
     def view(self):
         super().view()
-        print('something else here')
+        print(f'Scheduled for {self.date.pretty()}')
 
 class Anti(Task):
     '''Anti-tasks are used to cancel out one repetition of a recurring task.
@@ -97,4 +122,37 @@ class Anti(Task):
         
     def view(self):
         super().view()
-        print('something else here')
+        print(f'Occurs on {self.date.pretty()}')
+        
+if __name__ == '__main__':
+    test_recurring = Recurring(
+        name='catching some zzz',
+        category='Sleep',
+        start_time=22.5,
+        duration=8,
+        start_date=20220503,
+        end_date=20221231,
+        frequency=1
+    )
+    test_recurring.view()
+    print()
+    
+    test_transient = Transient(
+        name = 'Go gym',
+        category = 'Visit',
+        start_time = 9.5,
+        duration=2,
+        date=20220509
+    )
+    test_transient.view()
+    print()
+    
+    test_anti = Anti(
+        name='I really didn\'t want to walk',
+        category='Cancellation',
+        date=20200415,
+        start_time=10.25,
+        duration=0.75
+    )
+    test_anti.view()
+    print()
