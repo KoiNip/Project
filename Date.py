@@ -52,17 +52,59 @@ class Date():
     def __gt__(self, other):
          return self._date > other._date
     
-    # Helper functino for json serialization
+    # Helper functions
     def as_int(self):
+        """Helper function for JSON serialization"""
         return int(self._date)
     
+    def plus(self, days):
+        """Helper function to add a certain amount of days to a current date.
+        Returns a string.
+        >>> Date(20220427).plus(7)
+        '20220504'
+        >>> Date(20220405).plus(13)
+        '20220418'
+        >>> Date(20221229).plus(8)
+        '20230106'
+        >>> Date(20150815).plus(50)
+        '20151004'
+        >>> Date(20250420).plus(366)
+        '20260421'
+        """
+        max_days_in_current_month = self._calendar[self._month]['days']
+        
+        new_year = int(self._year)
+        new_month = int(self._month)
+        new_day = int(self._day) + days
+        
+        while(int(new_day) > max_days_in_current_month):
+            new_day = int(new_day)
+            new_day -= max_days_in_current_month
+            if (int(new_month) + 1 <= 12):
+                new_month = int(new_month) + 1
+            else:
+                new_month = int(new_month) - 11
+                new_year += 1
+            
+            if new_day < 10: new_day = '0' + str(new_day)
+            if new_month < 10: new_month = '0' + str(new_month)
+            max_days_in_current_month = self._calendar[str(new_month)]['days']
+            
+        if (int(new_month) < 10) and (len(str(new_month)) == 1): new_month = '0' + str(new_month)
+            
+        return f'{new_year}{new_month}{new_day}'
+
 if __name__ == '__main__':
-    today = Date('20220427')
-    yesterday = Date(20220426)
-    print(f'{today = }, also known as {today.pretty()}')
-    print(f'{yesterday = }, also known as {yesterday.pretty()}')
-    print(f'{today > yesterday = }')
-    print(f'{today.before(yesterday) = }')
-    print(f'{today.after(yesterday) = }')
-    print()
-    some_other_day = Date(20231040)
+    # today = Date('20220427')
+    # yesterday = Date(20220426)
+    # print(f'{today = }, also known as {today.pretty()}')
+    # print(f'{yesterday = }, also known as {yesterday.pretty()}')
+    # print(f'{today > yesterday = }')
+    # print()
+    # print(f'{today + yesterday = }')
+    # some_other_day = Date(20231040)
+    print(f'[{"T" if Date(20220427).plus(7)=="20220504" else "F"}] {Date(20220427).plus(7) = }, should be 20220504')
+    print(f'[{"T" if Date(20220405).plus(13)=="20220418" else "F"}] {Date(20220405).plus(13) = }, should be 20220418')
+    print(f'[{"T" if Date(20221229).plus(8)=="20230106" else "F"}] {Date(20221229).plus(8) = }, should be 20230106')
+    print(f'[{"T" if Date(20150815).plus(50)=="20151004" else "F"}] {Date(20150815).plus(50) = }, should be 20151004')
+    print(f'[{"T" if Date(20250420).plus(366)=="20260421" else "F"}] {Date(20250420).plus(366) = }, should be 20260421')

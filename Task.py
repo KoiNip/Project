@@ -89,6 +89,25 @@ class Recurring(Task):
         true_freq = 'Daily' if self.frequency == 1 else 'Weekly'
         print(f'Starts on {self.start_date.pretty()} and ends on {self.end_date.pretty()}\nFrequency: {true_freq}')
         
+    def all_days_as_list(self):
+        result = []
+        
+        dates = 'something here'
+        
+        for index, d in enumerate(dates):
+            temporary_task = Recurring(
+                name=f'{self.name}_TEMP_{index}',
+                category=self.type,
+                start_time=self.start_time,
+                duration=self.duration,
+                start_date=d,
+                end_date=self.end_date,
+                frequency=self.frequency
+            )
+            result.append(temporary_task)
+        
+        return result
+        
 class Transient(Task):
     '''Transient tasks only occur once.'''
     task_types = [
