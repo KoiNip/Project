@@ -1,0 +1,82 @@
+Use cases:
+
+1.) Add task to schedule
+	Summary: Attempt to add a new task to the schedule
+	Actor: User
+	Preconditions: The name of the task cannot be in the PSS already, or have overlapping times
+	Description: User enters the name of the task, type, date, start and end time to add into the PSS
+	Exceptions: Task name exists, times are overlapping, start or end times/dates are invalid values
+	Postconditions: Task is unique, no overlap and is successfully added into the PSS
+
+1.5) Add anti-task to schedule
+	Summary: Stop recurrence of a task
+	Actor: User
+	Preconditions: Transient task exists
+	Description: User enters a task name with type, date, start time, and duration and the PSS searches for a recurring task that matches the information given
+	Exceptions: Durations of task and anti-task not equal. Task and anti-task not on same day 
+	Postconditions: Recurrence of specified task is removed from the PSS and user is returned to the menu
+
+
+2.) Remove task from schedule
+	Summary: Delete task from the PSS
+	Actor: User
+	Preconditions: Task exists in the PSS, removing should not cause another task to overlap
+	Description: Go into the PSS, search for the task that matches the name entered, remove from PSS
+	Exceptions: Task does not exist, deleting causes an overlap 
+	Postconditions: Task is removed
+
+3.) View specific task
+	Summary: View task
+	Actor: User
+	Preconditions: Name entered is a valid task that exists
+	Description: User enters the name of a task they want to view, the PSS returns the task with its type, start/end date and duration
+	Exceptions: Task does not exist
+	Postconditions: Nothing is changed, returns to PSS menu
+
+4.) Edit a task in the schedule
+	Summary: Edit info of a task
+	Actor: User
+	Preconditions: Be at the PSS menu, task must exist 
+	Description: User enters the name of a task to edit. PSS bring us the task and the user edits the date, type, or duration of the task.
+	Exceptions: Task does not exist, attributes the user attempts to edit cause an overlap of preexisting tasks, start or end times/dates are invalid values
+	Postconditions: Task attributes are changed and user is returned to the menu
+
+5.) View a day's schedule
+	Summary: Check daily schedule
+	Actor: User
+	Preconditions: Schedule exists
+	Description: User selects the day (sun, mon, etc.) they want to view and the PSS returns a list of all the planned tasks on that day
+	Exceptions: No tasks exist for that day? (I feel like that's not really an exception because it would just show that nothing is planned yet**) Invalid day entered?
+	Postconditions: All tasks are listed except for any anti-task and the recurring task instance it cancels
+
+6.) View a week's schedule
+	Summary: Check weekly schedule
+	Actor: User
+	Preconditions: Schedule Exists
+	Description: User picks a week to view all the tasks listed and the PSS shows the tasks with dates, types, and durations
+	Exceptions: No tasks exist for that day? (I feel like that's not really an exception because it would just show that nothing is planned yet**) Invalid week entered?
+	Postconditions: All tasks are listed except for any anti-task and the recurring task instance it cancels
+
+7.) View a month's schedule
+	Summary: Check monthly schedule
+	Actor: User
+	Preconditions: Schedule Exists
+	Description: User picks a month to view all the tasks listsed and the PSS shows the tasks with dates, types, and durations
+	Exceptions: No tasks exist for that month? (I feel like that's not really an exception because it would just show that nothing is planned yet**) Invalid month entered?
+	Postconditions: All tasks are listed except for any anti-task and the recurring task instance it cancels
+
+8.) Write schedule to a file
+	Summary: Export schedule to a JSON file
+	Actor: User/File system?
+	Preconditions: Valid schedule exists
+	Description: User asks to export their schedule to a file. PSS asks for filename from user, if valid the PSS writes their schedule into the given file in JSON format
+	Exceptions: Filename entered does not exist. No schedule to export
+	Postconditions: File is written with schedule and can now be viewed
+
+9.) Read schedule from a file
+	Summary: Import schedule from JSON format file
+	Actor: User/File system?
+	Preconditions: Valid JSON file with a schedule
+	Description: User asks to import file, PSS asks user for filename and checks that it exists. Reads through the schedule and makes changes to schedule and prints the updated schedule to the user
+	Exceptions: File does not exist. File is not in JSON format. Any kind of error in the file. Inconsistent/invalid values or overlapping tasks, times etc.
+	Postconditions: Schedule is imported after reading the whole file. If errors occur schedule is not updated. If no errors, schedule is updated and the PSS prints it to the user
