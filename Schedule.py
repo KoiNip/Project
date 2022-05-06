@@ -7,15 +7,6 @@ class Schedule:
     _tasks = []
         
     def add_task(self):
-        '''
-        I added a sort of 'easter egg'
-        in the view() function. Because of this,
-        DO NOT ALLOW a task with the name 'ALL'
-        to be accepted, and 
-        DO NOT ALLOW a task name that is just numbers
-        to be accepted. Thanks -Seth
-        '''
-        
         task_types = {
             'Class': 'Recurring',
             'Study': 'Recurring',
@@ -181,11 +172,7 @@ class Schedule:
             print("The file {file_name} is not a valid file")
 
     def write(self):
-        file_name = input("Input the name of the file: ")
-        while file_name not in self._tasks:
-            input("File does not exist, enter a valid file name: ")
-        else: 
-            pass
+        pass
 
     def write_day(self):
         pass

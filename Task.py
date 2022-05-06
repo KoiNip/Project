@@ -40,11 +40,12 @@ class Task:
         '''Returns True if self overlaps other, otherwise False.'''
         pass
     
-    def to_json(self):
-        '''Returns a JSON string representation of the task.
-        Useful for writing schedules to a file.
-        '''
-        return (json.dumps(self.__dict__, default=Date.as_int, indent="\t"))
+    def serialize(self):
+        class_name = self.__class__.__name__
+        
+        if class_name == 'Recurring': return Recurring.serialize(self)
+        if class_name == 'Transient': return Transient.serialize(self)
+        if class_name == 'Anti': return Anti.serialize(self)
 
     def view(self):
         '''Prints a user-friendly representation of the task.'''
@@ -118,6 +119,16 @@ class Recurring(Task):
             result.append(temporary_task)
         
         return result
+    
+    def serialize(self):
+        # result = super().serialize()
+        result = super().__dict__.copy()
+        result.update({
+            "start_date": self.start_date.serialize(),
+            "end_date": self.end_date.serialize(),
+            "frequency": self.frequency
+        })
+        return result
         
 class Transient(Task):
     '''Transient tasks only occur once.'''
@@ -134,6 +145,14 @@ class Transient(Task):
     def view(self):
         super().view()
         print(f'Scheduled for {self.date.pretty()}')
+        
+    def serialize(self):
+        # result = super().serialize()
+        result = super().__dict__.copy()
+        result.update({
+            "date": self.date.serialize()
+        })
+        return result
 
 class Anti(Task):
     '''Anti-tasks are used to cancel out one repetition of a recurring task.
@@ -153,6 +172,14 @@ class Anti(Task):
     def view(self):
         super().view()
         print(f'Occurs on {self.date.pretty()}')
+        
+    def serialize(self):
+        # result = super().serialize()
+        result = super().__dict__.copy()
+        result.update({
+            "date": self.date.serialize()
+        })
+        return result
         
 if __name__ == '__main__':
     test_recurring = Recurring(

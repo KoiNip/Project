@@ -1,4 +1,5 @@
 from Schedule import schedule
+from FileHandler import file_handler
 import consolemenu as cm
 import consolemenu.items as cmi
 import Task
@@ -28,7 +29,7 @@ if __name__ == '__main__':
                 "one day": schedule.write_day,
                 "one week": schedule.write_week,
                 "one month": schedule.write_month,
-                "entire schedule": schedule.write
+                "entire schedule": file_handler.write
             },
             "View": {
                 "one day": schedule.view_day,

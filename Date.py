@@ -53,7 +53,7 @@ class Date():
          return self._date > other._date
     
     # Helper functions
-    def as_int(self):
+    def serialize(self):
         """Helper function for JSON serialization"""
         return int(self._date)
     
