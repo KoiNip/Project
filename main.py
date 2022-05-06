@@ -3,6 +3,7 @@ from FileHandler import file_handler
 import consolemenu as cm
 import consolemenu.items as cmi
 import Task
+import sys
 
 def buildMenu(menu, directory):
     for k, v in directory.items():
@@ -24,7 +25,7 @@ if __name__ == '__main__':
             "Edit": schedule.edit
         },
         "Schedule": {
-            "Read from file": schedule.read,
+            "Read from file": file_handler.read,
             "Write to file": {
                 "one day": schedule.write_day,
                 "one week": schedule.write_week,
@@ -36,10 +37,13 @@ if __name__ == '__main__':
                 "one week": schedule.view_week,
                 "one month": schedule.view_month
             }
+        },
+        "Exit": {
+            "Confirm": sys.exit
         }
     }
 
-    gui=cm.ConsoleMenu("PSS", "CS 3560", clear_screen=False)
+    gui=cm.ConsoleMenu("PSS", "CS 3560", clear_screen=False, show_exit_option=False)
     buildMenu(gui, directory)
     
     test_recurring = Task.Recurring(

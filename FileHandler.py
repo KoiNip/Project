@@ -5,14 +5,36 @@ from Schedule import schedule
 import Task
 
 class FileHandler():
-    def read():
-        pass
+    def read(self):
+        file_name = input("File name to read from? >> ")
+        if not file_name.endswith('.json'): file_name += '.json'
+        file_path = f'./schedules/{file_name}'
+        
+        try:
+            if not exists(file_path): raise FileNotFoundError
+            with open(file_path) as infile:
+                schedule_as_json = json.load(infile)
+            for task in schedule_as_json:
+                print(task)
+                try:
+                    new_tasks = []
+                    schedule._tasks = new_tasks
+                except Exception as e:
+                    print('Sorry, something went wrong.')
+                    print(f'{e.__class__.__name__}: {e}')
+                    
+        except json.JSONDecodeError:
+            print(f'File \'{file_path}\' contains invalid JSON or is corrupted.')
+        except FileNotFoundError:
+            print(f'File \'{file_path}\' does not exist.')
+        else:
+            print(f'Schedule loaded from \'{file_path}\' successfully!')
     
     def write(self, file_name=None, overwrite=False):
         if file_name == None:
             file_name = input("File name to write to? >> ")
-        
-        file_path = f'./schedules/{file_name}.json'
+        if not file_name.endswith('.json'): file_name += '.json'
+        file_path = f'./schedules/{file_name}'
         
         try:
             if exists(file_path) and not overwrite: raise FileExistsError

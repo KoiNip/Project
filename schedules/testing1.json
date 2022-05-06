@@ -1,0 +1,25 @@
+[
+    {
+        "name": "catching some zzz",
+        "type": "Sleep",
+        "start_time": 22.5,
+        "duration": 8.0,
+        "start_date": 20220503,
+        "end_date": 20221231,
+        "frequency": 1
+    },
+    {
+        "name": "Go gym",
+        "type": "Visit",
+        "start_time": 9.5,
+        "duration": 2.0,
+        "date": 20220509
+    },
+    {
+        "name": "I really didn't want to walk",
+        "type": "Cancellation",
+        "start_time": 10.25,
+        "duration": 0.75,
+        "date": 20200415
+    }
+]
