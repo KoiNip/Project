@@ -142,21 +142,26 @@ class Recurring(Task):
         # check if the anti task occurs on the same date as transient task
         # if dates are the same, check the time frame, if they overlap return False and create task
 
+        #Creating new lists of each task type to iterate through
         transient_list = [T for T in schedule._tasks if isinstance(other, Transient)]
         recurring_list = [T for T in schedule.tasks if isinstance(other, Recurring)]
         anti_list = [T for T in schedule.tasks if isinstance(other, Anti)]
 
+        #iterate through transient list first
         for task in transient_list:
-            end_time = task.start_time + task.duration
+            end_time = task.start_time + task.duration #Time window a task occurs
            # self_end_time = self.start_time + self.duration
-            self_current_day = self.start_date
+            self_current_day = self.start_date #Used to count each occurrence of a recurring task
 
+            #Run the loop until the task reaches the final date in its lifetime
+            #If the new recurring task occurs on the same day as a transient task at the same time, return True for overlap
             while(self_current_day <= self.end_date):
                 if self.start_date == task.date:
                     if (task.start_time <= self.start_time <= end_time):
                         return True
                 self_current_day = self.start_date.plus(self.frequency)
 
+        #Iterate through the recurring list
         for task in recurring_list:
             end_time = task.start_time + task.duration
             self_end_time = self.start_time + self.duration
@@ -167,6 +172,7 @@ class Recurring(Task):
                 if self.start_date <= task.start_date <= self.end_date:
                     if (task.start_time <= self.start_time <= end_time):
                         return True
+            #If frequency is weekly   
             elif self.frequency == 7:
                 if self.start_date == task.start_date:
                     if (task.start_time <= self.start_time <= end_time):
