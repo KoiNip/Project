@@ -1,6 +1,6 @@
 from tracemalloc import start
 from Date import Date
-from Schedule import schedule
+import Schedule
 import json
 import math
 
@@ -143,9 +143,9 @@ class Recurring(Task):
         # if dates are the same, check the time frame, if they overlap return False and create task
 
         #Creating new lists of each task type to iterate through
-        transient_list = [T for T in schedule._tasks if isinstance(other, Transient)]
-        recurring_list = [T for T in schedule.tasks if isinstance(other, Recurring)]
-        anti_list = [T for T in schedule.tasks if isinstance(other, Anti)]
+        transient_list = [other for other in Schedule.schedule._tasks if isinstance(other, Transient)]
+        recurring_list = [other for other in Schedule.schedule.tasks if isinstance(other, Recurring)]
+        anti_list = [other for other in Schedule.schedule.tasks if isinstance(other, Anti)]
 
         #iterate through transient list first
         for task in transient_list:
@@ -229,9 +229,9 @@ class Transient(Task):
         # check if the anti task occurs on the same date as transient task
         # if dates are the same, check the time frame, if they overlap return False and create task
 
-        transient_list = [T for T in schedule._tasks if isinstance(other, Transient)]
-        recurring_list = [T for T in schedule.tasks if isinstance(other, Recurring)]
-        anti_list = [T for T in schedule.tasks if isinstance(other, Anti)]
+        transient_list = [other for other in Schedule.schedule._tasks if isinstance(other, Transient)]
+        recurring_list = [other for other in Schedule.schedule.tasks if isinstance(other, Recurring)]
+        anti_list = [other for other in Schedule.schedule.tasks if isinstance(other, Anti)]
 
         for task in transient_list:
             end_time = task.start_time + task.duration
