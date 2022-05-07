@@ -1,4 +1,6 @@
+from tracemalloc import start
 from Date import Date
+from Schedule import schedule
 import json
 import math
 
@@ -36,10 +38,6 @@ class Task:
             raise TypeError(f"only children of '{cls.__name__}' may be instantiated")
         return super().__new__(cls)
 
-    def overlaps(self, other):
-        '''Returns True if self overlaps other, otherwise False.'''
-        pass
-    
     def serialize(self):
         class_name = self.__class__.__name__
         
@@ -129,7 +127,70 @@ class Recurring(Task):
             "frequency": self.frequency
         })
         return result
-        
+
+    def overlaps(self, other):
+        '''Checks if new task overlaps with current tasks in the schedule'''
+        # Comparing Transient Task against Recurring Task
+        # check if the transient task occurs with the recurring task start date or recurring task plus 7.....
+        # if its on one of those days, check if the times are the same or occurs within the duration of recurring task
+
+        # Comparing Transient Task against Transient Task
+        # check if the dates are the same
+        # if they're the same, check the times of the tasks and the durations for overlap
+
+        # Comparing Transient Task against Anti Task
+        # check if the anti task occurs on the same date as transient task
+        # if dates are the same, check the time frame, if they overlap return False and create task
+
+        #Creating new lists of each task type to iterate through
+        transient_list = [T for T in schedule._tasks if isinstance(other, Transient)]
+        recurring_list = [T for T in schedule.tasks if isinstance(other, Recurring)]
+        anti_list = [T for T in schedule.tasks if isinstance(other, Anti)]
+
+        #iterate through transient list first
+        for task in transient_list:
+            end_time = task.start_time + task.duration #Time window a task occurs
+           # self_end_time = self.start_time + self.duration
+            self_current_day = self.start_date #Used to count each occurrence of a recurring task
+
+            #Run the loop until the task reaches the final date in its lifetime
+            #If the new recurring task occurs on the same day as a transient task at the same time, return True for overlap
+            while(self_current_day <= self.end_date):
+                if self.start_date == task.date:
+                    if (task.start_time <= self.start_time <= end_time):
+                        return True
+                self_current_day = self.start_date.plus(self.frequency)
+
+        #Iterate through the recurring list
+        for task in recurring_list:
+            end_time = task.start_time + task.duration
+            self_end_time = self.start_time + self.duration
+            current_day = task.start_date
+            self_current_day = self.start_date
+            #if frequency of task is daily, check if self is within task start and end date, if it is check the time, if not it passes this check
+            if self.frequency == 1:
+                if self.start_date <= task.start_date <= self.end_date:
+                    if (task.start_time <= self.start_time <= end_time):
+                        return True
+            #If frequency is weekly   
+            elif self.frequency == 7:
+                if self.start_date == task.start_date:
+                    if (task.start_time <= self.start_time <= end_time):
+                        return True
+                elif self.start_date < task.start_date:
+                    while(self_current_day <= task.end_date):
+                        if self_current_day == task.start_date:
+                            if (task.start_time <= self.start_time <= end_time):
+                                return True
+                        self_current_day = self.start_date.plus(self.frequency)
+                elif self.start_date > task.start_date:
+                    while(current_day <= self.start_date):
+                        if current_day == self.start_date:
+                            if (task.start_time <= self.start_time <= end_time):
+                                return True
+                        current_day = task.start_date.plus(task.frequency)
+            return False   
+
 class Transient(Task):
     '''Transient tasks only occur once.'''
     task_types = [
@@ -153,6 +214,48 @@ class Transient(Task):
             "date": self.date.serialize()
         })
         return result
+    
+    def overlaps(self, other):
+        '''Checks if new task overlaps with current tasks in the schedule'''
+        # Comparing Transient Task against Recurring Task
+        # check if the transient task occurs with the recurring task start date or recurring task plus 7.....
+        # if its on one of those days, check if the times are the same or occurs within the duration of recurring task
+
+        # Comparing Transient Task against Transient Task
+        # check if the dates are the same
+        # if they're the same, check the times of the tasks and the durations for overlap
+
+        # Comparing Transient Task against Anti Task
+        # check if the anti task occurs on the same date as transient task
+        # if dates are the same, check the time frame, if they overlap return False and create task
+
+        transient_list = [T for T in schedule._tasks if isinstance(other, Transient)]
+        recurring_list = [T for T in schedule.tasks if isinstance(other, Recurring)]
+        anti_list = [T for T in schedule.tasks if isinstance(other, Anti)]
+
+        for task in transient_list:
+            end_time = task.start_time + task.duration
+            if self.date == task.date:
+                if (task.start_time <= self.start_time <= end_time):
+                    return True
+
+        for task in recurring_list:
+            end_time = task.start_time + task.duration
+            
+            current_day = task.start_date
+            while(current_day <= task.end_date):
+                if self.date == current_day:
+                    if (task.start_time <= self.start_time <= end_time):
+                        #check anti_list for valid anti task canceling one day of task
+                        for anti in anti_list:
+                            anti_end_time = anti.start_time + anti.duration
+                            if self.date == anti.date:
+                                if (anti.start_time <= self.start_time <= anti_end_time):
+                                    return False
+                        return True
+                current_day = task.start_date.plus(task.frequency)
+        #If no tasks in the schedule overlap, return false       
+        return False
 
 class Anti(Task):
     '''Anti-tasks are used to cancel out one repetition of a recurring task.

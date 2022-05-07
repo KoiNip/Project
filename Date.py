@@ -92,7 +92,7 @@ class Date():
             
         if (int(new_month) < 10) and (len(str(new_month)) == 1): new_month = '0' + str(new_month)
             
-        return f'{new_year}{new_month}{new_day}'
+        return Date(f'{new_year}{new_month}{new_day}')
 
 if __name__ == '__main__':
     # today = Date('20220427')
