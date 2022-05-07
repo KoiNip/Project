@@ -37,13 +37,10 @@ if __name__ == '__main__':
                 "one week": schedule.view_week,
                 "one month": schedule.view_month
             }
-        },
-        "Exit": {
-            "Confirm": sys.exit
         }
     }
 
-    gui=cm.ConsoleMenu("PSS", "CS 3560", clear_screen=False, show_exit_option=False)
+    gui=cm.ConsoleMenu("PSS", "CS 3560", clear_screen=False, show_exit_option=True)
     buildMenu(gui, directory)
     
     test_recurring = Task.Recurring(
