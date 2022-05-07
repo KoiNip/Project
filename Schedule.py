@@ -108,7 +108,7 @@ class Schedule:
                 else:
                     frequency_validation = True
             
-            #add overlap here when function finished
+            #add overlap here when function finished recurringtask.overlaps(_tasks)
             recurring_name = Task.Recurring(task_name, task_type, task_time, task_duration, task_date, end_date, frequency)
             self._tasks.append(recurring_name) #Adds the task to a list of all task objects
             print(f"{task_name} has been added!")
