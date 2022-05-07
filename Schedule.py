@@ -4,7 +4,8 @@ import os
 from utility.progress_bar import progressBar
 
 class Schedule:
-    _tasks = []
+    def __init__(self):
+        self._tasks = []
         
     def add_task(self):
         task_types = {
@@ -20,7 +21,7 @@ class Schedule:
             'Cancellation': 'Anti'
         }
         
-        names = [task.name for task in self._tasks] #Grabs all task names to 
+        names = [task.name for task in self._tasks] #Grabs all task names
         
         task_name = input("Input a new task name: ")
         while task_name in names or task_name == "ALL" or task_name.isnumeric() == True: #Checks if the name is already used, if the name is "ALL" (See view function), or if the name is only numbers
