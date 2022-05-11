@@ -109,8 +109,11 @@ class Schedule:
                 else:
                     frequency_validation = True
             
-            #add overlap here when function finished recurringtask.overlaps(_tasks)
+            #add overlap here when function finished
             recurring_name = Task.Recurring(task_name, task_type, task_time, task_duration, task_date, end_date, frequency)
+            if recurring_name.overlaps(self._tasks) == True:
+                print(f'{task_name} could not be added due to scheduling conflicts!')
+                return
             self._tasks.append(recurring_name) #Adds the task to a list of all task objects
             print(f"{task_name} has been added!")
             return
@@ -118,6 +121,7 @@ class Schedule:
         elif task_category == "Anti":
             #add overlap here when function finished
             anti_name = Task.Anti(task_name, task_type, task_time, task_duration, task_date)
+            #anti_name.overlaps(self._tasks)
             self._tasks.append(anti_name) #Adds the task to a list of all task objects
             print(f"{task_name} has been added!")
             return
@@ -125,6 +129,9 @@ class Schedule:
         else: #Task would have to be a Transient task
             #add overlap here when function is finished
             transient_name = Task.Transient(task_name, task_type, task_time, task_duration, task_date)
+            if transient_name.overlaps(self._tasks) == True:
+                print(f'{task_name} could not be added due to scheduling conflicts!')
+                return
             self._tasks.append(transient_name) #Adds the task to a list of all task objects
             print(f"{task_name} has been added!")
             return
