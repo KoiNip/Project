@@ -48,9 +48,15 @@ class Date():
     
     def __lt__(self, other): 
         return self._date < other._date
+
+    def __le__(self, other):
+        return self._date <= other._date
     
     def __gt__(self, other):
-         return self._date > other._date
+        return self._date > other._date
+
+    def __ge__(self, other):
+        return self._date >= other._date
     
     # Helper functions
     def serialize(self):
@@ -86,10 +92,11 @@ class Date():
                 new_month = int(new_month) - 11
                 new_year += 1
             
-            if new_day < 10: new_day = '0' + str(new_day)
+            #if new_day < 10: new_day = '0' + str(new_day) #If this while loop executed, it would cause typeError in line 99 with new_day(str) < 10(int)
             if new_month < 10: new_month = '0' + str(new_month)
             max_days_in_current_month = self._calendar[str(new_month)]['days']
-            
+   
+        if (new_day) < 10: new_day = '0' + str(new_day) #Added to ensure single digit dates keep the leading 0 to maintain '00' day format
         if (int(new_month) < 10) and (len(str(new_month)) == 1): new_month = '0' + str(new_month)
             
         return Date(f'{new_year}{new_month}{new_day}')
