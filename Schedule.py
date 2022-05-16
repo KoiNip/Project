@@ -1,3 +1,4 @@
+from ast import Delete
 import Task
 from Date import Date
 import os
@@ -109,32 +110,35 @@ class Schedule:
                 else:
                     frequency_validation = True
             
-            #add overlap here when function finished
             recurring_name = Task.Recurring(task_name, task_type, task_time, task_duration, task_date, end_date, frequency)
             if recurring_name.overlaps(self._tasks) == True:
                 print(f'{task_name} could not be added due to scheduling conflicts!')
                 return
-            self._tasks.append(recurring_name) #Adds the task to a list of all task objects
-            print(f"{task_name} has been added!")
-            return
+            else:
+                self._tasks.append(recurring_name) #Adds the task to a list of all task objects
+                print(f"{task_name} has been added!")
+                return
         
         elif task_category == "Anti":
-            #add overlap here when function finished
             anti_name = Task.Anti(task_name, task_type, task_time, task_duration, task_date)
             #anti_name.overlaps(self._tasks)
-            self._tasks.append(anti_name) #Adds the task to a list of all task objects
-            print(f"{task_name} has been added!")
-            return
+            if anti_name.overlaps(self._tasks) == False:
+                print(f'{task_name} could not be added because the Recurring Task does not exist, or an Anti Task is already added for that time!')
+                return
+            else:
+                self._tasks.append(anti_name) #Adds the task to a list of all task objects
+                print(f"{task_name} has been added!")
+                return
        
         else: #Task would have to be a Transient task
-            #add overlap here when function is finished
             transient_name = Task.Transient(task_name, task_type, task_time, task_duration, task_date)
             if transient_name.overlaps(self._tasks) == True:
                 print(f'{task_name} could not be added due to scheduling conflicts!')
                 return
-            self._tasks.append(transient_name) #Adds the task to a list of all task objects
-            print(f"{task_name} has been added!")
-            return
+            else:
+                self._tasks.append(transient_name) #Adds the task to a list of all task objects
+                print(f"{task_name} has been added!")
+                return
     
     def view(self):
         name = input("Task name? >> ")

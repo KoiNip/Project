@@ -145,12 +145,10 @@ class Recurring(Task):
         #Creating new lists of each task type to iterate through
         transient_list = [other for other in Schedule.schedule._tasks if isinstance(other, Transient)]
         recurring_list = [other for other in Schedule.schedule._tasks if isinstance(other, Recurring)]
-        anti_list = [other for other in Schedule.schedule._tasks if isinstance(other, Anti)]
 
         #iterate through transient list first
         for task in transient_list:
             end_time = task.start_time + task.duration #Time window a task occurs
-           # self_end_time = self.start_time + self.duration
             self_current_day = self.start_date #Used to count each occurrence of a recurring task
 
             #Run the loop until the task reaches the final date in its lifetime
@@ -164,7 +162,6 @@ class Recurring(Task):
         #Iterate through the recurring list
         for task in recurring_list:
             end_time = task.start_time + task.duration
-            self_end_time = self.start_time + self.duration
             current_day = task.start_date
             self_current_day = self.start_date
             #if frequency of task is daily, check if self is within task start and end date, if it is check the time, if not it passes this check
@@ -283,6 +280,28 @@ class Anti(Task):
             "date": self.date.serialize()
         })
         return result
+
+    #Anti overlap checks if the entered task falls on the same day and time as an instance of a recurring task
+    def overlaps(self, other):
+
+        recurring_list = [other for other in Schedule.schedule._tasks if isinstance(other, Recurring)]
+        anti_list = [other for other in Schedule.schedule._tasks if isinstance(other, Anti)]
+
+        #Check if Anti Task exists first
+        for task in anti_list:
+            if self.date == task.date:
+                if self.start_time == task.start_time and self.duration == task.duration:
+                    return False #Anti Task is already being used at the entered Date and Time/Duration
+
+        for task in recurring_list:
+            current_day = task.start_date
+            
+            while current_day <= task.end_date:
+                if self.date == current_day:
+                    if self.start_time == task.start_time and self.duration == task.duration:
+                        return True #A True return means that a valid recurring instance exists and can be cancelled out
+                current_day = current_day.plus(task.frequency)
+        return False #A false return means that there were no recurring tasks in the schedule that could be cancelled
         
 if __name__ == '__main__':
     test_recurring = Recurring(
