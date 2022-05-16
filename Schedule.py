@@ -121,7 +121,6 @@ class Schedule:
         
         elif task_category == "Anti":
             anti_name = Task.Anti(task_name, task_type, task_time, task_duration, task_date)
-            #anti_name.overlaps(self._tasks)
             if anti_name.overlaps(self._tasks) == False:
                 print(f'{task_name} could not be added because the Recurring Task does not exist, or an Anti Task is already added for that time!')
                 return
