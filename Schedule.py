@@ -111,7 +111,7 @@ class Schedule:
             
             #add overlap here when function finished recurringtask.overlaps(_tasks)
             recurring_name = Task.Recurring(task_name, task_type, task_time, task_duration, task_date, end_date, frequency)
-            if recurring_name.overlaps(self._tasks) == True
+            if recurring_name.overlaps(self._tasks) == True:
                 print(f'{task_name} could not be added due to scheduling conflicts!')
                 return
             self._tasks.append(recurring_name) #Adds the task to a list of all task objects

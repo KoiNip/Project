@@ -144,8 +144,8 @@ class Recurring(Task):
 
         #Creating new lists of each task type to iterate through
         transient_list = [other for other in Schedule.schedule._tasks if isinstance(other, Transient)]
-        recurring_list = [other for other in Schedule.schedule.tasks if isinstance(other, Recurring)]
-        anti_list = [other for other in Schedule.schedule.tasks if isinstance(other, Anti)]
+        recurring_list = [other for other in Schedule.schedule._tasks if isinstance(other, Recurring)]
+        anti_list = [other for other in Schedule.schedule._tasks if isinstance(other, Anti)]
 
         #iterate through transient list first
         for task in transient_list:
