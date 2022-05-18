@@ -102,16 +102,4 @@ class Date():
         return Date(f'{new_year}{new_month}{new_day}')
 
 if __name__ == '__main__':
-    # today = Date('20220427')
-    # yesterday = Date(20220426)
-    # print(f'{today = }, also known as {today.pretty()}')
-    # print(f'{yesterday = }, also known as {yesterday.pretty()}')
-    # print(f'{today > yesterday = }')
-    # print()
-    # print(f'{today + yesterday = }')
-    # some_other_day = Date(20231040)
-    print(f'[{"T" if Date(20220427).plus(7)=="20220504" else "F"}] {Date(20220427).plus(7) = }, should be 20220504')
-    print(f'[{"T" if Date(20220405).plus(13)=="20220418" else "F"}] {Date(20220405).plus(13) = }, should be 20220418')
-    print(f'[{"T" if Date(20221229).plus(8)=="20230106" else "F"}] {Date(20221229).plus(8) = }, should be 20230106')
-    print(f'[{"T" if Date(20150815).plus(50)=="20151004" else "F"}] {Date(20150815).plus(50) = }, should be 20151004')
-    print(f'[{"T" if Date(20250420).plus(366)=="20260421" else "F"}] {Date(20250420).plus(366) = }, should be 20260421')
+    pass

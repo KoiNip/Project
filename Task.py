@@ -1,23 +1,9 @@
-from tracemalloc import start
 from Date import Date
 import Schedule
-import json
 import math
 
 class Task:
-    task_types = [
-        'Class',
-        'Study',
-        'Sleep',
-        'Exercise',
-        'Work',
-        'Meal',
-        'Visit',
-        'Shopping',
-        'Appointment',
-        'Cancellation'
-    ]
-
+    '''Represents the functionality of a generic Task object.'''
     def __init__(self, name, category, start_time, duration):
         self.name = name
         self.type = category
@@ -39,6 +25,7 @@ class Task:
         return super().__new__(cls)
 
     def serialize(self):
+        '''Returns a JSON serializable form of a Task instance.'''
         class_name = self.__class__.__name__
         
         if class_name == 'Recurring': return Recurring.serialize(self)
@@ -98,34 +85,22 @@ class Recurring(Task):
         super().view()
         true_freq = 'Daily' if self.frequency == 1 else 'Weekly'
         print(f'Starts on {self.start_date.pretty()} and ends on {self.end_date.pretty()}\nFrequency: {true_freq}')
-        
-    def all_days_as_list(self):
-        result = []
-        
-        dates = 'something here'
-        
-        for index, d in enumerate(dates):
-            temporary_task = Recurring(
-                name=f'{self.name}_TEMP_{index}',
-                category=self.type,
-                start_time=self.start_time,
-                duration=self.duration,
-                start_date=d,
-                end_date=self.end_date,
-                frequency=self.frequency
-            )
-            result.append(temporary_task)
-        
-        return result
     
     def serialize(self):
-        # result = super().serialize()
         result = super().__dict__.copy()
+        result.pop('start_date')
+        result.pop('end_date')
+        
         result.update({
-            "start_date": self.start_date.serialize(),
-            "end_date": self.end_date.serialize(),
-            "frequency": self.frequency
+            "Name": result.pop('name'),
+            "Type": result.pop('type'),
+            "StartTime": result.pop('start_time'),
+            "Duration": result.pop('duration'),
+            "StartDate": self.start_date.serialize(),
+            "EndDate": self.end_date.serialize(),
+            "Frequency": result.pop('frequency')
         })
+        
         return result
 
     def overlaps(self, other):
@@ -205,10 +180,15 @@ class Transient(Task):
         print(f'Scheduled for {self.date.pretty()}')
         
     def serialize(self):
-        # result = super().serialize()
         result = super().__dict__.copy()
+        result.pop('date')
+        
         result.update({
-            "date": self.date.serialize()
+            "Name": result.pop('name'),
+            "Type": result.pop('type'),
+            "StartTime": result.pop('start_time'),
+            "Duration": result.pop('duration'),
+            "Date": self.date.serialize()
         })
         return result
     
@@ -274,10 +254,15 @@ class Anti(Task):
         print(f'Occurs on {self.date.pretty()}')
         
     def serialize(self):
-        # result = super().serialize()
         result = super().__dict__.copy()
+        result.pop('date')
+        
         result.update({
-            "date": self.date.serialize()
+            "Name": result.pop('name'),
+            "Type": result.pop('type'),
+            "StartTime": result.pop('start_time'),
+            "Duration": result.pop('duration'),
+            "Date": self.date.serialize()
         })
         return result
 
@@ -304,34 +289,4 @@ class Anti(Task):
         return False #A false return means that there were no recurring tasks in the schedule that could be cancelled
         
 if __name__ == '__main__':
-    test_recurring = Recurring(
-        name='catching some zzz',
-        category='Sleep',
-        start_time=22.5,
-        duration=8,
-        start_date=20220503,
-        end_date=20221231,
-        frequency=1
-    )
-    test_recurring.view()
-    print()
-    
-    test_transient = Transient(
-        name = 'Go gym',
-        category = 'Visit',
-        start_time = 9.5,
-        duration=2,
-        date=20220509
-    )
-    test_transient.view()
-    print()
-    
-    test_anti = Anti(
-        name='I really didn\'t want to walk',
-        category='Cancellation',
-        date=20200415,
-        start_time=10.25,
-        duration=0.75
-    )
-    test_anti.view()
-    print()
+    pass

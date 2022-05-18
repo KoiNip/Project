@@ -1,4 +1,3 @@
-from ast import Delete
 import Task
 from Date import Date
 import os
@@ -140,25 +139,33 @@ class Schedule:
                 return
     
     def view(self):
+        '''Allows the user to specify the name of a task, and will display the contents of that task if it exists.'''
+        # Prompt user for task name.
         name = input("Task name? >> ")
         
-        # EASTER EGG
+        # Edge case:
+        # Display all the tasks in a user-friendly way, if asked to.
         if name == 'ALL':
             for index, task in enumerate(self._tasks):
                 print(f'[{index}] [{task.__class__.__name__[0]}] {task.name}')
             return
         
+        # Search for a task with the given task name, and if found, display its contents.
         for index, item in enumerate(progressBar(self._tasks, prefix=f'Searching')):
             if (item.name == name) or (str(index) == name): 
                 print(f'Searching\nSearch stopped: task \'{name}\' found\n')
                 self._tasks[index].view()
                 return
             
+        # Fallback message if no task could be found with the given name.
         print(f'Sorry, no task with the name \'{name}\' currently exists.')
     
     def delete(self):
+        '''Allows the user to delete a task using a task name.'''
+        # Prompt user for task name.
         name = input("Task name? >> ")
         
+        # Search for a task with the given task name, and if found, delete it from the schedule.
         for index, item in enumerate(progressBar(self._tasks, prefix=f'Searching')):
             if item.name == name:
                 print(f'Searching\nSearch stopped: task \'{name}\' found\n')
@@ -166,6 +173,7 @@ class Schedule:
                 print(f'Deleted task \'{name}\'')
                 return
             
+        # Fallback message if no task could be found with the given name.
         print(f'Sorry, no task with the name \'{name}\' currently exists.')
 
     def edit(self):
@@ -174,25 +182,6 @@ class Schedule:
             input("That task name is not in the schedule, please input a task in the schedule: ")
         else: 
             pass
-
-    def read(self):
-        file_name = input("Input the name of the file: ")
-        if os.path.exist("{file_name}"):
-            f = open("{file_name}", "awt")
-        else:
-            print("The file {file_name} is not a valid file")
-
-    def write(self):
-        pass
-
-    def write_day(self):
-        pass
-
-    def write_week(self):
-        pass
-
-    def write_month(self):
-        pass
 
     def view_day(self):
         pass
@@ -205,4 +194,4 @@ class Schedule:
     
 
 # -----------------------------------
-schedule = Schedule()
+schedule = Schedule() # This effectively acts as a singleton.
