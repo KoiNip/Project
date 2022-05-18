@@ -15,20 +15,73 @@ class FileHandler():
             if not exists(file_path): raise FileNotFoundError
             with open(file_path) as infile:
                 schedule_as_json = json.load(infile)
-            for task in schedule_as_json:
-                print(task)
+            
+            new_schedule = []
+            
+            task_types = {
+                "Recurring": ['Class', 'Study', 'Sleep', 'Exercise', 'Work', 'Meal'],
+                "Transient": ['Visit', 'Shopping', 'Appointment'],
+                "Anti": ['Cancellation']
+            }
+            all_possible_task_types = [item for sublist in task_types.values() for item in sublist]
+            generic_task_attributes = ['name', 'type', 'start_time', 'duration']
+            
+            def dict_to_recurring(dct):
+                recurring_task_attributes = ['start_date', 'end_date', 'frequency']
+                recurring_task_attributes.extend(generic_task_attributes)
+                for attribute in dct:
+                    if attribute not in recurring_task_attributes: raise AttributeError
+
+                return Task.Recurring(
+                    dct['name'], dct['type'], 
+                    dct['start_time'], dct['duration'], 
+                    dct['start_date'], dct['end_date'], 
+                    dct['frequency'])
+    
+            def dict_to_transient(dct):
+                transient_task_attributes = ['date']
+                transient_task_attributes.extend(generic_task_attributes)
+                for attribute in dct:
+                    if attribute not in transient_task_attributes: raise AttributeError
+                
+                return Task.Transient(
+                    dct['name'], dct['type'], 
+                    dct['start_time'], dct['duration'], 
+                    dct['date'])
+                
+            def dict_to_anti(dct):
+                anti_task_attributes = ['date']
+                anti_task_attributes.extend(generic_task_attributes)
+                for attribute in dct:
+                    if attribute not in anti_task_attributes: raise AttributeError
+                    
+                return Task.Anti(
+                    dct['name'], dct['type'],
+                    dct['start_time'], dct['duration'],
+                    dct['date']
+                )
+            
+            for dct in schedule_as_json:
                 try:
-                    new_tasks = []
-                    schedule._tasks = new_tasks
-                except Exception as e:
-                    print('Sorry, something went wrong.')
-                    print(f'{e.__class__.__name__}: {e}')
+                    if dct['type'] not in all_possible_task_types: raise AttributeError
+                    
+                    if dct['type'] in task_types['Recurring']: 
+                        new_schedule.append(dict_to_recurring(dct))
+                    elif dct['type'] in task_types['Transient']:
+                        new_schedule.append(dict_to_transient(dct))
+                    elif dct['type'] in task_types['Anti']:
+                        new_schedule.append(dict_to_anti(dct))
+                
+                except AttributeError:
+                    print(f'AttributeError: dict type could not be converted into a Recurring, Transient, or Anti Task.')
+                    print(f'{dct = }')
                     
         except json.JSONDecodeError:
             print(f'File \'{file_path}\' contains invalid JSON or is corrupted.')
         except FileNotFoundError:
             print(f'File \'{file_path}\' does not exist.')
         else:
+            schedule._tasks = new_schedule
             print(f'Schedule loaded from \'{file_path}\' successfully!')
     
     def write(self, sched = schedule, file_name=None, overwrite=False):
