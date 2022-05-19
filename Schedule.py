@@ -1,3 +1,4 @@
+from asyncio import tasks
 import Task
 from Date import Date
 import os
@@ -111,31 +112,31 @@ class Schedule:
             
             recurring_name = Task.Recurring(task_name, task_type, task_time, task_duration, task_date, end_date, frequency)
             if recurring_name.overlaps(self._tasks) == True:
-                print(f'{task_name} could not be added due to scheduling conflicts!')
+                #print(f'{task_name} could not be added due to scheduling conflicts!')
                 return
             else:
                 self._tasks.append(recurring_name) #Adds the task to a list of all task objects
-                print(f"{task_name} has been added!")
+                #print(f"{task_name} has been added!")
                 return
         
         elif task_category == "Anti":
             anti_name = Task.Anti(task_name, task_type, task_time, task_duration, task_date)
             if anti_name.overlaps(self._tasks) == False:
-                print(f'{task_name} could not be added because the Recurring Task does not exist, or an Anti Task is already added for that time!')
+                #print(f'{task_name} could not be added because the Recurring Task does not exist, or an Anti Task is already added for that time!')
                 return
             else:
                 self._tasks.append(anti_name) #Adds the task to a list of all task objects
-                print(f"{task_name} has been added!")
+                #print(f"{task_name} has been added!")
                 return
        
         else: #Task would have to be a Transient task
             transient_name = Task.Transient(task_name, task_type, task_time, task_duration, task_date)
             if transient_name.overlaps(self._tasks) == True:
-                print(f'{task_name} could not be added due to scheduling conflicts!')
+                #print(f'{task_name} could not be added due to scheduling conflicts!')
                 return
             else:
                 self._tasks.append(transient_name) #Adds the task to a list of all task objects
-                print(f"{task_name} has been added!")
+                #print(f"{task_name} has been added!")
                 return
     
     def view(self):
@@ -184,7 +185,39 @@ class Schedule:
             pass
 
     def view_day(self):
-        pass
+        day_input = Date(input('Enter the date you would like to view: '))
+        day_list = [task for task in self._tasks if task.date == day_input]
+        
+        # for task in self._tasks: 
+        #     if isinstance(task, Task.Transient):
+        #         if task.date == day_input:
+        #             day_list.append(task)
+            
+
+        #     if isinstance(task, Task.Recurring):
+        #         current_day = task.start_date
+        #         while current_day <= day_input:
+        #             if current_day == day_input:
+        #                 #Then check if antitask cancels out instance of recurring task
+        #                 for anti_task in self._tasks:
+        #                     if isinstance(anti_task, Task.Anti):
+        #                         if anti_task.start_time != task.start_time and anti_task.duration != task.duration:
+        #                             day_list.append(task)
+        #                             #If the Anti Task does not cancel the instance on this day, append it to the list
+                                
+                                   
+        #         current_day = current_day.plus(task.frequency)
+        
+        #Sort the list by earliest time to latest time
+        #day_list.sort(key=task.start_time)
+
+        #Display list
+        if day_list:
+            print(f'{day_list}') #Will fix the formatting
+        else:
+            print(f'There are no tasks scheduled for {day_input.pretty()}')
+            
+        
 
     def view_week(self):
         pass
