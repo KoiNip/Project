@@ -127,44 +127,78 @@ class FileHandler():
         
         else:
             print(f'Schedule written to \'{file_path}\' successfully!')
-            
-    def write_day(self, date):
-        daySchedule = Schedule()
-        allDayTask = Task.Transient("ALL_DAY", Task.Transient.task_types[0], 0, 23.75, date)
-        for task in schedule._tasks:
-            if task.overlaps([allDayTask]):
-                if type(task) == Task.Recurring:
-                    temp = Task.Recurring(task.name, task.type, task.start_time, task.duration, date, date, 1)
-                    daySchedule._tasks.append(temp)
-                else:
-                    daySchedule._tasks.append(task)
-        self.write(daySchedule)
+
     
-    def write_week(self, date):
-        weekSchedule = Schedule()
-        longTask = Task.Recurring("ALL_WEEK", Task.Recurring.task_types[0], 0, 23.75, date, date.plus(7), 1)
-        for task in schedule._tasks:
-            if task.overlaps([longTask]):
-                if type(task) != Task.Recurring:
-                    weekSchedule._tasks.append(task)
-                else:
-                    recurTask = Task.Recurring(task.name, task.type, task.start_time, task.duration, date, date.plus(7), task.frequency)
-                    weekSchedule._tasks.append(recurTask)
+    def happenOnDay(self, task, date):
+        '''Returns true if task occurs on date, returns false otherwise. Task can be transient, recurring, or anti'''
+        if type(task) == Task.Recurring:
+            if task.start_date > date:    #Start date happens after the day we want, return false
+                return False
+            elif task.start_date == date:   #Start day happens on desired day, return true
+                return True
+            elif task.start_date < date:    #Start day happens before desired day, iterate to see if it occurs on day
+                current_day = task.start_date
+                while current_day <= date:
+                    if current_day == date:  #Event occurs on desired day, return true
+                        return True
+                    current_day = current_day.plus(task.frequency)  #Increment current day
+                return False
+
+        elif type(task) == Task.Transient:
+            if task.date == date:
+                return True
+
+        elif type(task) == Task.Anti:
+            if task.date == date:
+                return True
+            
+    #NOTE: The write methods here will take all tasks that occur in the specified time and add them to the json file. Only one instance of a recurring task is added
+    def write_day(self):
+        date = Date(input("Enter the date: "))
+        daySchedule = Schedule()    #Schedule to write to file
+        for task in schedule._tasks:    #Iterate through all tasks...
+            if(self.happenOnDay(task, date)):   #If task happens on this date...
+                daySchedule._tasks.append(task) #Add it to the schedule...
+        self.write(daySchedule) #Write the schedule to a file
+    
+    def write_week(self):
+        '''Creates a schedule of all tasks that occur on the day entered, and all tasks that occur on the following seven days'''
+        date = Date(input("Enter the date for the start of the week: "))
+        weekSchedule = Schedule()   #Schedule to write to file
+        alreadyAdded = []   #List of tasks already added to schedule
+        for i in range(0, 7):   #Iterate through 7 days (1 week)
+            for task in schedule._tasks:
+                if self.happenOnDay(task, date):
+                    if task.name not in alreadyAdded:   #If task has already been added then it is recursive, don't add it again
+                        weekSchedule._tasks.append(task)
+                        alreadyAdded.append(task.name)  #If we add the task to schedule, at it to list so we know not to add it again
+            date = date.plus(1) #Go to the next day
         self.write(weekSchedule)
     
-    def write_month(self, month, year):
+    def write_month(self):
+        date = Date(input("Enter the date to start from (Days entered are irrelevant, but still enter the whole date): "))
+
+        #Update the date to start at the beginning of the month, regaurdless as to what they entered
+        date_list = list(date._date)
+        date_list[6] = "0"  #Change last 2 digits of date to 0
+        date_list[7] = "0"
+        new_string = "".join(date_list)
+        date._date = new_string
+        date._day = "00"
+
         monthSchedule = Schedule()
-        start = Date(year + month + "01")
-        end = Date(year + month + Date._calendar[month]['days'])
-        longTask = Task.Recurring("ALL_MONTH", Task.Recurring.task_types[0], 0, 23.75, 1)
-        for task in schedule._tasks:
-            if task.overlaps([longTask]):
-                if type(task) != Task.Recurring:
-                    monthSchedule._tasks.append(task)
-                else:
-                    recurTask = Task.Recurring(task.name, task.type, task.start_time, task.duration, start, end, task.frequency)
-                    monthSchedule._tasks.append(recurTask)
+        alreadyAdded = []
+        for i in range(0, date._calendar[date._month]["days"]): #Check all days from start to end of month
+            for task in schedule._tasks:
+                if self.happenOnDay(task, date):
+                    if task.name not in alreadyAdded:
+                        monthSchedule._tasks.append(task)
+                        alreadyAdded.append(task.name)
+            date = date.plus(1)
+
         self.write(monthSchedule)
+
+
 
 # -----------------------------------
 file_handler = FileHandler() # This effectively acts as a singleton.
