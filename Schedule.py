@@ -189,7 +189,11 @@ class Schedule:
 
     def view_day(self):
         day_input = Date(input('Enter the date you would like to view: '))
-        day_list = [task for task in self._tasks if task.date == day_input]
+        dayView = Schedule()
+        
+        #day_list = [task for task in self._tasks if task.date == day_input]
+
+
         
         # for task in self._tasks: 
         #     if isinstance(task, Task.Transient):
