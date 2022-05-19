@@ -132,7 +132,7 @@ class FileHandler():
         daySchedule = Schedule()
         allDayTask = Task.Transient("ALL_DAY", Task.Transient.task_types[0], 0, 23.75, date)
         for task in schedule._tasks:
-            if task.overlaps(allDayTask):
+            if task.overlaps([allDayTask]):
                 if type(task) == Task.Recurring:
                     temp = Task.Recurring(task.name, task.type, task.start_time, task.duration, date, date, 1)
                     daySchedule._tasks.append(temp)
@@ -144,7 +144,7 @@ class FileHandler():
         weekSchedule = Schedule()
         longTask = Task.Recurring("ALL_WEEK", Task.Recurring.task_types[0], 0, 23.75, date, date.plus(7), 1)
         for task in schedule._tasks:
-            if task.overlaps(longTask):
+            if task.overlaps([longTask]):
                 if type(task) != Task.Recurring:
                     weekSchedule._tasks.append(task)
                 else:
@@ -158,7 +158,7 @@ class FileHandler():
         end = Date(year + month + Date._calendar[month]['days'])
         longTask = Task.Recurring("ALL_MONTH", Task.Recurring.task_types[0], 0, 23.75, 1)
         for task in schedule._tasks:
-            if task.overlaps(longTask):
+            if task.overlaps([longTask]):
                 if type(task) != Task.Recurring:
                     monthSchedule._tasks.append(task)
                 else:
