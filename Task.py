@@ -121,16 +121,19 @@ class Recurring(Task):
         transient_list = [other for other in Schedule.schedule._tasks if isinstance(other, Transient)]
         recurring_list = [other for other in Schedule.schedule._tasks if isinstance(other, Recurring)]
 
-        #iterate through transient list first
+        self_end_time = self.start_time + self.duration
+
+        #Iterate through transient list first
         for task in transient_list:
             end_time = task.start_time + task.duration #Time window a task occurs
             self_current_day = self.start_date #Used to count each occurrence of a recurring task
 
             #Run the loop until the task reaches the final date in its lifetime
             #If the new recurring task occurs on the same day as a transient task at the same time, return True for overlap
-            while(self_current_day <= self.end_date):
+            while self_current_day <= self.end_date:
                 if self.start_date == task.date:
-                    if (task.start_time <= self.start_time <= end_time):
+                    if (task.start_time <= self.start_time < end_time) or (task.start_time <= self_end_time <= end_time):
+                        print(f'{self.name} could not be added to the schedule because the task, {task.name}, is already happening at that time!')
                         return True
                 self_current_day = self.start_date.plus(self.frequency)
 
@@ -140,28 +143,38 @@ class Recurring(Task):
             current_day = task.start_date
             self_current_day = self.start_date
             #if frequency of task is daily, check if self is within task start and end date, if it is check the time, if not it passes this check
-            if self.frequency == 1:
-                if self.start_date <= task.start_date <= self.end_date: 
-                    if (task.start_time <= self.start_time <= end_time):
+            if self.frequency == 1 or task.frequency == 1:
+                if self.start_date <= task.start_date <= self.end_date:
+                    if (task.start_time <= self.start_time < end_time) or (task.start_time <= self_end_time <= end_time):
+                        print(f'{self.name} could not be added to the schedule because the task, {task.name}, is already happening at that time!')
                         return True
-            #If frequency is weekly   
-            elif self.frequency == 7:
+                elif task.start_date <= self.start_date <= task.end_date:
+                  if (task.start_time <= self.start_time < end_time) or (task.start_time <= self_end_time <= end_time):
+                        print(f'{self.name} could not be added to the schedule because the task, {task.name}, is already happening at that time!')
+                        return True
+            #If frequency is weekly
+            elif self.frequency == 7 or task.frequency == 7:
                 if self.start_date == task.start_date:
-                    if (task.start_time <= self.start_time <= end_time):
+                    if (task.start_time <= self.start_time < end_time) or (task.start_time <= self_end_time <= end_time):
+                        print(f'{self.name} could not be added to the schedule because the task, {task.name}, is already happening at that time!')
                         return True
                 elif self.start_date < task.start_date:
-                    while(self_current_day <= task.end_date):
-                        if self_current_day == task.start_date:
-                            if (task.start_time <= self.start_time <= end_time):
-                                return True
-                        self_current_day = self.start_date.plus(self.frequency)
+                    if self.end_date > task.start_date:
+                        while self_current_day <= task.start_date:
+                            if self_current_day == task.start_date:
+                                if (task.start_time <= self.start_time < end_time) or (task.start_time <= self_end_time <= end_time):
+                                    print(f'{self.name} could not be added to the schedule because the task, {task.name}, is already happening at that time!')
+                                    return True
+                            self_current_day = self.start_date.plus(self.frequency)
                 elif self.start_date > task.start_date:
-                    while(current_day <= self.start_date):
+                    while current_day <= self.start_date:
                         if current_day == self.start_date:
-                            if (task.start_time <= self.start_time <= end_time):
+                            if (task.start_time <= self.start_time < end_time) or (task.start_time <= self_end_time <= end_time):
+                                print(f'{self.name} could not be added to the schedule because the task, {task.name}, is already happening at that time!')
                                 return True
                         current_day = task.start_date.plus(task.frequency)
-            return False   
+        print(f'{self.name} has been successfully added to the schedule!')
+        return False   
 
 class Transient(Task):
     '''Transient tasks only occur once.'''
@@ -210,10 +223,13 @@ class Transient(Task):
         recurring_list = [other for other in Schedule.schedule._tasks if isinstance(other, Recurring)]
         anti_list = [other for other in Schedule.schedule._tasks if isinstance(other, Anti)]
 
+        self_end_time = self.start_time + self.duration
+
         for task in transient_list:
             end_time = task.start_time + task.duration
             if self.date == task.date:
-                if (task.start_time <= self.start_time <= end_time):
+                if (task.start_time <= self.start_time < end_time) or (task.start_time <= self_end_time <= end_time):
+                    print(f'{self.name} could not be added to the schedule because the task, {task.name}, is already happening at that time!')
                     return True
 
         for task in recurring_list:
@@ -222,16 +238,19 @@ class Transient(Task):
             current_day = task.start_date
             while (current_day <= task.end_date):
                 if self.date == current_day:
-                    if (task.start_time <= self.start_time <= end_time):
-                        #check anti_list for valid anti task canceling one day of task
+                    if (task.start_time <= self.start_time < end_time) or (task.start_time <= self_end_time <= end_time):
+                        #check anti_list for valid anti task canceling one instance of task
                         for anti in anti_list:
                             anti_end_time = anti.start_time + anti.duration
                             if self.date == anti.date:
-                                if (anti.start_time <= self.start_time <= anti_end_time):
+                                if (anti.start_time <= self.start_time <= anti_end_time) or (anti.start_time <= self_end_time <= end_time):
+                                    print(f'{self.name} has been successfully added to the schedule!')
                                     return False
+                        print(f'{self.name} could not be added to the schedule because the task, {task.name}, is already happening at that time!')
                         return True
                 current_day = current_day.plus(task.frequency)
-        #If no tasks in the schedule overlap, return false       
+        #If no tasks in the schedule overlap, return false     
+        print(f'{self.name} has been successfully added to the schedule!')  
         return False
 
 class Anti(Task):
@@ -272,10 +291,12 @@ class Anti(Task):
         recurring_list = [other for other in Schedule.schedule._tasks if isinstance(other, Recurring)]
         anti_list = [other for other in Schedule.schedule._tasks if isinstance(other, Anti)]
 
+
         #Check if Anti Task exists first
         for task in anti_list:
             if self.date == task.date:
                 if self.start_time == task.start_time and self.duration == task.duration:
+                    print(f'{self.name} can not be added because {task.name} is already cancelling a task at that time!')
                     return False #Anti Task is already being used at the entered Date and Time/Duration
 
         for task in recurring_list:
@@ -284,8 +305,10 @@ class Anti(Task):
             while current_day <= task.end_date:
                 if self.date == current_day:
                     if self.start_time == task.start_time and self.duration == task.duration:
+                        print(f'{self.name} has successfully cancelled out {task.name} at {self.start_time} on {self.date.pretty}!')
                         return True #A True return means that a valid recurring instance exists and can be cancelled out
                 current_day = current_day.plus(task.frequency)
+        print(f'There were no tasks in the schedule for {self.name} to cancel out!')
         return False #A false return means that there were no recurring tasks in the schedule that could be cancelled
         
 if __name__ == '__main__':
