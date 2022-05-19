@@ -88,9 +88,12 @@ class Schedule:
                 try:
                     test_date = Date(end_date)
                 except AssertionError:
-                    end_date = input(f"{end_date} is not a valid date, input a valid date: ")
+                    end_date = input(f"The {end_date} is not a valid date type, input a valid date: ")
                 else:
-                    valid_date = True
+                    if end_date < task_date:
+                        end_date = input(f"The end date: {end_date} is less than the start date: {task_date}. Input a valid date: ")
+                    else:
+                        valid_date = True
             
             frequency_validation = True
             try: #Makes sure the frequency is valid
