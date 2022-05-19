@@ -51,12 +51,12 @@ class Schedule:
         
         time_validation = True
         try: #This try catch makes sure the user inputted a float
-            task_time = float(input("Please input the start time from 0.00 to 24.00: "))
+            task_time = float(input("Please input the start time from 0.00 to 23.75: "))
         except:
             print("That was an invalid input type, setting time to -1: ")
             task_time = -1
             time_validation = False
-        while 0 > task_time or task_time > 24 or time_validation==False: 
+        while 0 > task_time or task_time > 23.75 or time_validation==False: 
             try: #In case the user enters a string or char
                 task_time = float(input(f"{task_time} is not a valid start time, please input a valid start time: "))
             except:
@@ -89,9 +89,12 @@ class Schedule:
                 try:
                     test_date = Date(end_date)
                 except AssertionError:
-                    end_date = input(f"{end_date} is not a valid date, input a valid date: ")
+                    end_date = input(f"The {end_date} is not a valid date type, input a valid date: ")
                 else:
-                    valid_date = True
+                    if end_date < task_date:
+                        end_date = input(f"The end date: {end_date} is less than the start date: {task_date}. Input a valid date: ")
+                    else:
+                        valid_date = True
             
             frequency_validation = True
             try: #Makes sure the frequency is valid

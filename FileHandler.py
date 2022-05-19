@@ -19,7 +19,7 @@ class FileHandler():
                 schedule_as_json = json.load(infile)
             
             # Setup work
-            new_schedule = []
+            new_schedule = schedule._tasks.copy()
             task_types = {
                 "Recurring": ['Class', 'Study', 'Sleep', 'Exercise', 'Work', 'Meal'],
                 "Transient": ['Visit', 'Shopping', 'Appointment'],
@@ -70,24 +70,28 @@ class FileHandler():
             # Create a task object (Recurring, Transient, or Anti) for every dictionary object
             # within the schedule json file.
             for dct in schedule_as_json:
-                try:
-                    if dct['Type'] not in all_possible_task_types: raise AttributeError
-                    
-                    if dct['Type'] in task_types['Recurring']: 
-                        new_schedule.append(dict_to_recurring(dct))
-                    elif dct['Type'] in task_types['Transient']:
-                        new_schedule.append(dict_to_transient(dct))
-                    elif dct['Type'] in task_types['Anti']:
-                        new_schedule.append(dict_to_anti(dct))
+                if dct['Type'] not in all_possible_task_types: raise AttributeError
                 
-                except AttributeError:
-                    print(f'AttributeError: dict type could not be converted into a Recurring, Transient, or Anti Task.')
-                    print(f'{dct = }')
+                if dct['Type'] in task_types['Recurring']:
+                    temp_task = dict_to_recurring(dct)
+                elif dct['Type'] in task_types['Transient']:
+                    temp_task = dict_to_transient(dct)
+                elif dct['Type'] in task_types['Anti']:
+                    temp_task = dict_to_anti(dct)
+                    
+                if temp_task.overlaps(new_schedule): raise RuntimeError
+                new_schedule.append(temp_task)
                     
         except json.JSONDecodeError:
             print(f'File \'{file_path}\' contains invalid JSON or is corrupted.')
         except FileNotFoundError:
             print(f'File \'{file_path}\' does not exist.')
+        except AttributeError:
+            print(f'AttributeError: dict type could not be converted into a Recurring, Transient, or Anti Task.')
+            print(f'{dct = }')
+        except RuntimeError:
+            print(f'One or more tasks in \'{file_path}\' overlaps with the current schedule. File reading is being terminated, and no changes to the schedule have been made.')
+            return
         else:
             schedule._tasks = new_schedule
             print(f'Schedule loaded from \'{file_path}\' successfully!')
@@ -128,7 +132,7 @@ class FileHandler():
         daySchedule = Schedule()
         allDayTask = Task.Transient("ALL_DAY", Task.Transient.task_types[0], 0, 23.75, date)
         for task in schedule._tasks:
-            if task.overlaps(allDayTask):
+            if task.overlaps([allDayTask]):
                 if type(task) == Task.Recurring:
                     temp = Task.Recurring(task.name, task.type, task.start_time, task.duration, date, date, 1)
                     daySchedule._tasks.append(temp)
@@ -140,7 +144,7 @@ class FileHandler():
         weekSchedule = Schedule()
         longTask = Task.Recurring("ALL_WEEK", Task.Recurring.task_types[0], 0, 23.75, date, date.plus(7), 1)
         for task in schedule._tasks:
-            if task.overlaps(longTask):
+            if task.overlaps([longTask]):
                 if type(task) != Task.Recurring:
                     weekSchedule._tasks.append(task)
                 else:
@@ -154,7 +158,7 @@ class FileHandler():
         end = Date(year + month + Date._calendar[month]['days'])
         longTask = Task.Recurring("ALL_MONTH", Task.Recurring.task_types[0], 0, 23.75, 1)
         for task in schedule._tasks:
-            if task.overlaps(longTask):
+            if task.overlaps([longTask]):
                 if type(task) != Task.Recurring:
                     monthSchedule._tasks.append(task)
                 else:
